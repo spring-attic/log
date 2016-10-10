@@ -23,25 +23,17 @@
 				<groupId>org.springframework.cloud.stream.app.plugin</groupId>
 				<artifactId>spring-cloud-stream-app-maven-plugin</artifactId>
 				<version>${scs-app-maven-plugin.version}</version>
-				<executions>
-<!--
-					<execution>
-						<id>foobar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>generate-app</goal>
-						</goals>
 						<configuration>
 							<javaVersion>1.7</javaVersion>
 							<bootVersion>${bootVersion}</bootVersion>
 							<generatedProjectHome>${session.executionRootDirectory}/spring-cloud-stream-log-apps</generatedProjectHome>
 							<generatedProjectVersion>${project.version}</generatedProjectVersion>
 							<applicationType>stream</applicationType>
-							<bomsWithHigherPrecedence>org.springframework.cloud.stream.app:spring-cloud-stream-app-core-dependencies:1.1.0.BUILD-SNAPSHOT</bomsWithHigherPrecedence>
+							<bomsWithHigherPrecedence>org.springframework.cloud.stream.app:app-starters-core-dependencies:1.1.0.BUILD-SNAPSHOT</bomsWithHigherPrecedence>
 							<bom>
 								<name>scs-bom</name>
 								<groupId>org.springframework.cloud.stream.app</groupId>
-								<artifactId>spring-cloud-stream-log-app-dependencies</artifactId>
+								<artifactId>log-app-dependencies</artifactId>
 								<version>${project.version}</version>
 							</bom>
 							<binders>
@@ -61,9 +53,6 @@
 							</generatedApps>
 
 						</configuration>
-					</execution>
--->
-				</executions>
 
 			</plugin>
 		</plugins>
