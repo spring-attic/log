@@ -1,61 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<groupId>org.springframework.cloud.stream.app</groupId>
-		<artifactId>spring-cloud-stream-log-parent</artifactId>
-		<version>1.1.0.BUILD-SNAPSHOT</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.springframework.cloud.stream.app</groupId>
+        <artifactId>spring-cloud-stream-log-parent</artifactId>
+        <version>1.1.0.BUILD-SNAPSHOT</version>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>log-app-generator</artifactId>
-	<packaging>pom</packaging>
-	<name>log-app-generator</name>
+    <artifactId>log-app-generator</artifactId>
+    <packaging>pom</packaging>
+    <name>log-app-generator</name>
 
-	<properties>
-		<bomsWithHigherPrecedence/>
-		<bootVersion>1.3.5.RELEASE</bootVersion>
-	</properties>
+    <properties>
+        <bomsWithHigherPrecedence/>
+        <bootVersion>1.3.5.RELEASE</bootVersion>
+    </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.cloud.stream.app.plugin</groupId>
-				<artifactId>spring-cloud-stream-app-maven-plugin</artifactId>
-				<version>${scs-app-maven-plugin.version}</version>
-						<configuration>
-							<javaVersion>1.7</javaVersion>
-							<bootVersion>${bootVersion}</bootVersion>
-							<generatedProjectHome>${session.executionRootDirectory}/spring-cloud-stream-log-apps</generatedProjectHome>
-							<generatedProjectVersion>${project.version}</generatedProjectVersion>
-							<applicationType>stream</applicationType>
-							<bomsWithHigherPrecedence>org.springframework.cloud.stream.app:app-starters-core-dependencies:1.1.0.BUILD-SNAPSHOT</bomsWithHigherPrecedence>
-							<bom>
-								<name>scs-bom</name>
-								<groupId>org.springframework.cloud.stream.app</groupId>
-								<artifactId>log-app-dependencies</artifactId>
-								<version>${project.version}</version>
-							</bom>
-							<binders>
-								<kafka />
-								<rabbit />
-							</binders>
-							<additionalGlobalDependencies>
-								<dependency>
-									<groupId>org.springframework.cloud</groupId>
-									<artifactId>spring-cloud-starter-config</artifactId>
-								</dependency>
-							</additionalGlobalDependencies>
-							<generatedApps>
-
-								<log-sink />
-
-							</generatedApps>
-
-						</configuration>
-
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.cloud.stream.app.plugin</groupId>
+                <artifactId>spring-cloud-stream-app-maven-plugin</artifactId>
+                <version>${scs-app-maven-plugin.version}</version>
+                <configuration>
+                    <javaVersion>1.7</javaVersion>
+                    <bootVersion>${bootVersion}</bootVersion>
+                    <generatedProjectHome>${session.executionRootDirectory}/apps
+                    </generatedProjectHome>
+                    <generatedProjectVersion>${project.version}</generatedProjectVersion>
+                    <applicationType>stream</applicationType>
+                    <bom>
+                        <name>scs-bom</name>
+                        <groupId>org.springframework.cloud.stream.app</groupId>
+                        <artifactId>log-app-dependencies</artifactId>
+                        <version>${project.version}</version>
+                    </bom>
+                    <additionalBoms>
+                        <bom>
+                            <name>app-starters-core-dependencies</name>
+                            <groupId>org.springframework.cloud.stream.app</groupId>
+                            <artifactId>app-starters-core-dependencies</artifactId>
+                            <version>1.1.0.BUILD-SNAPSHOT</version>
+                        </bom>
+                    </additionalBoms>
+                    <binders>
+                        <kafka/>
+                        <rabbit/>
+                    </binders>
+                    <additionalGlobalDependencies>
+                        <dependency>
+                            <groupId>org.springframework.cloud</groupId>
+                            <artifactId>spring-cloud-starter-config</artifactId>
+                        </dependency>
+                    </additionalGlobalDependencies>
+                    <generatedApps>
+                        <log-sink/>
+                    </generatedApps>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
