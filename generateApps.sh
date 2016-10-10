@@ -26,7 +26,7 @@ done
 
 #execute mvn plugin with app generation
 if [ -n "$PLUGIN_PARAMS" ]; then
-    mvn clean install scs:generate-app -pl :log-app-generator $PLUGIN_PARAMS
+    ./mvnw clean install scs:generate-app -pl :log-app-generator $PLUGIN_PARAMS
 else
-    mvn clean install scs:generate-app -pl :log-app-generator
+    ./mvnw clean install scs:generate-app -pl :log-app-generator
 fi
