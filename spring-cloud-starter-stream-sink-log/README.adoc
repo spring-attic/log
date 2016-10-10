@@ -1,0 +1,20 @@
+//tag::ref-doc[]
+= Log Sink
+
+The `log` sink uses the application logger to output the data for inspection.
+
+== Options
+
+The **$$log$$** $$sink$$ has the following options:
+
+//tag::configuration-properties[]
+//end::configuration-properties[]
+
+//end::ref-doc[]
+
+== Build
+
+```
+$ mvn clean package
+```
+
