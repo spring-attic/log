@@ -18,7 +18,7 @@ case $key in
     shift # past argument
     ;;
     *)
-        # unknown option
+        # unsupported option
     ;;
 esac
 shift
