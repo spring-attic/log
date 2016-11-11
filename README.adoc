@@ -1,0 +1,2 @@
+# log
+Log application starters
