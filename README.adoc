@@ -1,2 +1,5 @@
-# log
-Log application starters
+# Log Sink
+
+To learn more about this application and the supported properties, please review the following link.
+
+include::spring-cloud-starter-stream-sink-log/README.adoc[]
