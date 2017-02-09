@@ -20,12 +20,12 @@ import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.annotation.Bindings;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.handler.LoggingHandler;
@@ -34,13 +34,16 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = LogSinkApplicationTests.LogSinkApplication.class)
 @DirtiesContext
-@IntegrationTest({"server.port=-1", "log.name=foo", "log.level=warn",
+@SpringBootTest({"server.port=-1", "log.name=foo", "log.level=warn",
 		"log.expression=payload.toUpperCase()"})
 public class LogSinkApplicationTests {
 
