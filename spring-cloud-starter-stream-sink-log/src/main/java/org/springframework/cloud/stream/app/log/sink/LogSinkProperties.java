@@ -19,6 +19,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.integration.handler.LoggingHandler;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +32,7 @@ import static org.springframework.integration.handler.LoggingHandler.Level.INFO;
  * @author Eric Bottard
  */
 @ConfigurationProperties("log")
+@Validated
 public class LogSinkProperties {
 
 	/**
