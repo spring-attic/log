@@ -3,6 +3,18 @@
 
 The `log` sink uses the application logger to output the data for inspection.
 
+== Input
+
+=== Headers
+
+=== Payload
+
+Any
+
+== Output
+
+N/A
+
 == Options
 
 The **$$log$$** $$sink$$ has the following options:
@@ -18,6 +30,18 @@ $$log.name$$:: $$The name of the logger to use.$$ *($$String$$, default: `$$<non
 == Build
 
 ```
-$ mvn clean package
+$ ./mvnw clean install -PgenerateApps
+$ cd apps
+```
+You can find the corresponding binder based projects here.
+You can then cd into one one of the folders and build it:
+```
+$ ./mvnw clean package
+```
+
+== Examples
+
+```
+java -jar log-sink.jar
 ```
 
