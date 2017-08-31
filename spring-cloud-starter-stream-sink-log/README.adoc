@@ -25,8 +25,6 @@ $$log.level$$:: $$The level at which to log messages.$$ *($$Level$$, default: `$
 $$log.name$$:: $$The name of the logger to use.$$ *($$String$$, default: `$$<none>$$`)*
 //end::configuration-properties[]
 
-//end::ref-doc[]
-
 == Build
 
 ```
@@ -45,3 +43,4 @@ $ ./mvnw clean package
 java -jar log-sink.jar
 ```
 
+//end::ref-doc[]
