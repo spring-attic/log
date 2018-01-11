@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.stream.annotation.Bindings;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.test.util.TestUtils;
-import org.springframework.messaging.support.GenericMessage;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -48,7 +48,6 @@ import static org.mockito.Mockito.verify;
 public class LogSinkApplicationTests {
 
 	@Autowired
-	@Bindings(LogSinkConfiguration.class)
 	private Sink sink;
 
 	@SuppressWarnings("unused")
@@ -64,16 +63,18 @@ public class LogSinkApplicationTests {
 		assertEquals(LoggingHandler.Level.WARN, this.logSinkHandler.getLevel());
 		Log logger = TestUtils.getPropertyValue(this.logSinkHandler, "messageLogger",
 				Log.class);
-		assertEquals("foo", TestUtils.getPropertyValue(logger, "name"));
+		assertEquals("foo", TestUtils.getPropertyValue(logger, "logger.name"));
 		logger = spy(logger);
 		new DirectFieldAccessor(this.logSinkHandler).setPropertyValue("messageLogger",
 				logger);
-		GenericMessage<String> message = new GenericMessage<>("foo");
+		Message<String> message = MessageBuilder.withPayload("foo")
+				.setHeader("contentType", "application/json")
+				.build();
 		this.sink.input().send(message);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(logger).warn(captor.capture());
 		assertEquals("FOO", captor.getValue());
-		this.logSinkHandler.setExpression("#this");
+		this.logSinkHandler.setLogExpressionString("#this");
 		this.sink.input().send(message);
 		verify(logger, times(2)).warn(captor.capture());
 		assertSame(message, captor.getValue());
