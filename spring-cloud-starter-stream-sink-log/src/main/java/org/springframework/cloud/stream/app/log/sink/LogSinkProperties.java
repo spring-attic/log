@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.springframework.cloud.stream.app.log.sink;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.integration.handler.LoggingHandler;
@@ -30,6 +30,7 @@ import static org.springframework.integration.handler.LoggingHandler.Level.INFO;
  *
  * @author Gary Russell
  * @author Eric Bottard
+ * @author Chris Schaefer
  */
 @ConfigurationProperties("log")
 @Validated
