@@ -30,13 +30,15 @@ import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.test.util.TestUtils;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.MimeType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +70,7 @@ public class LogSinkApplicationTests {
 		new DirectFieldAccessor(this.logSinkHandler).setPropertyValue("messageLogger",
 				logger);
 		Message<String> message = MessageBuilder.withPayload("foo")
-				.setHeader("contentType", "application/json")
+				.setHeader("contentType", new MimeType("json"))
 				.build();
 		this.sink.input().send(message);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
@@ -77,7 +79,20 @@ public class LogSinkApplicationTests {
 		this.logSinkHandler.setLogExpressionString("#this");
 		this.sink.input().send(message);
 		verify(logger, times(2)).warn(captor.capture());
-		assertSame(message, captor.getValue());
+
+		Message captorMessage = (Message) captor.getAllValues().get(2);
+		assertEquals("Unexpected payload value", "foo", captorMessage.getPayload());
+
+		MessageHeaders messageHeaders = captorMessage.getHeaders();
+		assertEquals("Unexpected number of headers", 3, messageHeaders.size());
+
+		String[] headers = { "contentType", "id", "timestamp" };
+
+		for (String header : headers) {
+			assertTrue("Missing " + header + " header", messageHeaders.containsKey(header));
+			assertEquals("Header " + header + " does not match", messageHeaders.get(header),
+					message.getHeaders().get(header));
+		}
 	}
 
 
