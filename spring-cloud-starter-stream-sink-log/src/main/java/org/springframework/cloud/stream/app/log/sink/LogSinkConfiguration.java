@@ -24,11 +24,9 @@ import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.handler.LoggingHandler;
+import org.springframework.integration.support.MutableMessage;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.support.MessageBuilder;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author Dave Syer
@@ -55,10 +53,12 @@ public class LogSinkConfiguration {
 						? message.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString()
 						: BindingProperties.DEFAULT_CONTENT_TYPE.toString();
 				if (contentType.contains("text") || contentType.contains("json")) {
-					message = MessageBuilder.withPayload(new String(((byte[])message.getPayload()), StandardCharsets.UTF_8))
-							.copyHeaders(message.getHeaders()).build();
+					Message<String> mutableMessage = new MutableMessage<>(new String(((byte[])message.getPayload())), message.getHeaders());
+					super.handleMessageInternal(mutableMessage);
 				}
-				super.handleMessageInternal(message);
+				else {
+					super.handleMessageInternal(message);
+				}
 			}
 		};
 		loggingHandler.setLogExpressionString(this.properties.getExpression());
