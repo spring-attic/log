@@ -69,7 +69,7 @@ public class LogSinkApplicationTests {
 		logger = spy(logger);
 		new DirectFieldAccessor(this.logSinkHandler).setPropertyValue("messageLogger",
 				logger);
-		Message<String> message = MessageBuilder.withPayload("foo")
+		Message<byte[]> message = MessageBuilder.withPayload("foo".getBytes())
 				.setHeader("contentType", new MimeType("json"))
 				.build();
 		this.sink.input().send(message);
@@ -86,7 +86,7 @@ public class LogSinkApplicationTests {
 		MessageHeaders messageHeaders = captorMessage.getHeaders();
 		assertEquals("Unexpected number of headers", 3, messageHeaders.size());
 
-		String[] headers = { "contentType", "id", "timestamp" };
+		String[] headers = { "contentType" };
 
 		for (String header : headers) {
 			assertTrue("Missing " + header + " header", messageHeaders.containsKey(header));
@@ -94,7 +94,6 @@ public class LogSinkApplicationTests {
 					message.getHeaders().get(header));
 		}
 	}
-
 
 	@SpringBootApplication
 	static class LogSinkApplication {
