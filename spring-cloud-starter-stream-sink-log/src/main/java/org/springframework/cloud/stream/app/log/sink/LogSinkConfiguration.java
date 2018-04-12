@@ -19,16 +19,21 @@ package org.springframework.cloud.stream.app.log.sink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.config.BindingProperties;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.handler.LoggingHandler;
+import org.springframework.integration.support.MutableMessage;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 
 /**
  * @author Dave Syer
  * @author Marius Bogoevici
  * @author Gary Russell
  * @author Chris Schaefer
+ * @author Soby Chacko
  */
 @EnableBinding(Sink.class)
 @EnableConfigurationProperties(LogSinkProperties.class)
@@ -40,7 +45,22 @@ public class LogSinkConfiguration {
 	@Bean
 	@ServiceActivator(inputChannel = Sink.INPUT)
 	public LoggingHandler logSinkHandler() {
-		LoggingHandler loggingHandler = new LoggingHandler(this.properties.getLevel().name());
+		LoggingHandler loggingHandler = new LoggingHandler(this.properties.getLevel().name()) {
+
+			@Override
+			protected void handleMessageInternal(Message<?> message) throws Exception {
+				String contentType = message.getHeaders().containsKey(MessageHeaders.CONTENT_TYPE)
+						? message.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString()
+						: BindingProperties.DEFAULT_CONTENT_TYPE.toString();
+				if (contentType.contains("text") || contentType.contains("json")) {
+					Message<String> mutableMessage = new MutableMessage<>(new String(((byte[])message.getPayload())), message.getHeaders());
+					super.handleMessageInternal(mutableMessage);
+				}
+				else {
+					super.handleMessageInternal(message);
+				}
+			}
+		};
 		loggingHandler.setLogExpressionString(this.properties.getExpression());
 		loggingHandler.setLoggerName(this.properties.getName());
 		return loggingHandler;
