@@ -49,16 +49,15 @@ public class LogSinkConfiguration {
 
 			@Override
 			protected void handleMessageInternal(Message<?> message) throws Exception {
-				String contentType = message.getHeaders().containsKey(MessageHeaders.CONTENT_TYPE)
-						? message.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString()
-						: BindingProperties.DEFAULT_CONTENT_TYPE.toString();
-				if (contentType.contains("text") || contentType.contains("json")) {
-					Message<String> mutableMessage = new MutableMessage<>(new String(((byte[])message.getPayload())), message.getHeaders());
-					super.handleMessageInternal(mutableMessage);
+				if (message.getPayload() instanceof byte[]){
+					String contentType = message.getHeaders().containsKey(MessageHeaders.CONTENT_TYPE)
+							? message.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString()
+							: BindingProperties.DEFAULT_CONTENT_TYPE.toString();
+					if (contentType.contains("text") || contentType.contains("json")) {
+						message = new MutableMessage<>(new String(((byte[]) message.getPayload())), message.getHeaders());
+					}
 				}
-				else {
-					super.handleMessageInternal(message);
-				}
+				super.handleMessageInternal(message);
 			}
 		};
 		loggingHandler.setLogExpressionString(this.properties.getExpression());
