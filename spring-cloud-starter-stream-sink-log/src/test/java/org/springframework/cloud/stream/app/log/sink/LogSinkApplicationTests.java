@@ -16,6 +16,9 @@
 
 package org.springframework.cloud.stream.app.log.sink;
 
+import java.util.HashMap;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.stream.converter.TupleJsonMessageConverter;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.test.util.TestUtils;
@@ -34,6 +38,8 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.tuple.Tuple;
+import org.springframework.tuple.TupleBuilder;
 import org.springframework.util.MimeType;
 
 import static org.junit.Assert.assertEquals;
@@ -44,23 +50,42 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@SpringBootTest({"server.port=-1", "log.name=foo", "log.level=warn",
-		"log.expression=payload.toUpperCase()"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest({ "server.port=-1", "log.name=foo", "log.level=warn",
+		"log.expression=payload.toUpperCase()" })
 public class LogSinkApplicationTests {
 
 	@Autowired
 	private Sink sink;
 
-	@SuppressWarnings("unused")
-	@Autowired
-	private Sink same;
-
 	@Autowired
 	private LoggingHandler logSinkHandler;
 
 	@Test
-	public void test() {
+	public void testTextContentType() {
+		Message<byte[]> message = MessageBuilder.withPayload("{\"foo\":\"bar\"}".getBytes())
+				.setHeader("contentType", MimeType.valueOf("text/plain"))
+				.build();
+		this.testMessage(message, "{\"foo\":\"bar\"}");
+	}
+
+	@Test
+	public void testJsonContentType() {
+		Message<byte[]> message = MessageBuilder.withPayload("{\"foo\":\"bar\"}".getBytes())
+				.setHeader("contentType", new MimeType("json"))
+				.build();
+		this.testMessage(message, "{\"foo\":\"bar\"}");
+	}
+
+	@Test
+	public void testTupleContentType() {
+		Tuple tuple = TupleBuilder.tuple().of("foo", "bar");
+		Message<byte[]> message = (Message<byte[]>) new TupleJsonMessageConverter(
+				new ObjectMapper()).toMessage(tuple, new MessageHeaders(new HashMap<>()));
+		this.testMessage(message, "{\"foo\":\"bar\"}");
+	}
+
+	private void testMessage(Message<byte[]> message, String expectedPayload) {
 		assertNotNull(this.sink.input());
 		assertEquals(LoggingHandler.Level.WARN, this.logSinkHandler.getLevel());
 		Log logger = TestUtils.getPropertyValue(this.logSinkHandler, "messageLogger",
@@ -69,19 +94,16 @@ public class LogSinkApplicationTests {
 		logger = spy(logger);
 		new DirectFieldAccessor(this.logSinkHandler).setPropertyValue("messageLogger",
 				logger);
-		Message<byte[]> message = MessageBuilder.withPayload("foo".getBytes())
-				.setHeader("contentType", new MimeType("json"))
-				.build();
 		this.sink.input().send(message);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(logger).warn(captor.capture());
-		assertEquals("FOO", captor.getValue());
+		assertEquals(expectedPayload.toUpperCase(), captor.getValue());
 		this.logSinkHandler.setLogExpressionString("#this");
 		this.sink.input().send(message);
 		verify(logger, times(2)).warn(captor.capture());
 
 		Message captorMessage = (Message) captor.getAllValues().get(2);
-		assertEquals("Unexpected payload value", "foo", captorMessage.getPayload());
+		assertEquals("Unexpected payload value", expectedPayload, captorMessage.getPayload());
 
 		MessageHeaders messageHeaders = captorMessage.getHeaders();
 		assertEquals("Unexpected number of headers", 3, messageHeaders.size());
@@ -97,12 +119,9 @@ public class LogSinkApplicationTests {
 
 	@SpringBootApplication
 	static class LogSinkApplication {
-
 		public static void main(String[] args) {
 			SpringApplication.run(LogSinkApplication.class, args);
 		}
 
 	}
-
-
 }
