@@ -34,6 +34,7 @@ import org.springframework.messaging.MessageHeaders;
  * @author Gary Russell
  * @author Chris Schaefer
  * @author Soby Chacko
+ * @author Christian Tzolov
  */
 @EnableBinding(Sink.class)
 @EnableConfigurationProperties(LogSinkProperties.class)
@@ -53,7 +54,7 @@ public class LogSinkConfiguration {
 					String contentType = message.getHeaders().containsKey(MessageHeaders.CONTENT_TYPE)
 							? message.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString()
 							: BindingProperties.DEFAULT_CONTENT_TYPE.toString();
-					if (contentType.contains("text") || contentType.contains("json")) {
+					if (contentType.contains("text") || contentType.contains("json") || contentType.contains("x-spring-tuple")) {
 						message = new MutableMessage<>(new String(((byte[]) message.getPayload())), message.getHeaders());
 					}
 				}
